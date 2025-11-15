@@ -1,8 +1,21 @@
 {
-  "file_path": "test_images/test1.pdf",
+  "file_path": "data/pdfs/\u0410\u041f\u0417-.pdf",
   "file_type": "pdf",
   "page_processed": 0,
   "total_pages": 9,
-  "detections_count": 0,
-  "detections": []
+  "detections_count": 1,
+  "detections": [
+    {
+      "class": "qr",
+      "confidence": 0.2703,
+      "bbox": {
+        "x1": 3019,
+        "y1": 4367,
+        "x2": 3183,
+        "y2": 4541,
+        "width": 164,
+        "height": 173
+      }
+    }
+  ]
 }

@@ -1,0 +1,56 @@
+{
+  "pdf_path": "data/pdfs/Археология-.pdf",
+  "total_pages": 2,
+  "total_detections": 3,
+  "pages": [
+    {
+      "page": 1,
+      "detections_count": 0,
+      "detections": [],
+      "output_image": "output/page_1_annotated.jpg"
+    },
+    {
+      "page": 2,
+      "detections_count": 3,
+      "detections": [
+        {
+          "class": "stamp",
+          "confidence": 0.9555,
+          "bbox": {
+            "x1": 2202,
+            "y1": 1941,
+            "x2": 2803,
+            "y2": 2579,
+            "width": 601,
+            "height": 637
+          }
+        },
+        {
+          "class": "stamp",
+          "confidence": 0.8742,
+          "bbox": {
+            "x1": 993,
+            "y1": 1967,
+            "x2": 1593,
+            "y2": 2586,
+            "width": 599,
+            "height": 618
+          }
+        },
+        {
+          "class": "signature",
+          "confidence": 0.5505,
+          "bbox": {
+            "x1": 600,
+            "y1": 2001,
+            "x2": 1556,
+            "y2": 2419,
+            "width": 956,
+            "height": 418
+          }
+        }
+      ],
+      "output_image": "output/page_2_annotated.jpg"
+    }
+  ]
+}

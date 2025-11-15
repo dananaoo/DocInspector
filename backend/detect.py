@@ -65,7 +65,7 @@ class DocumentDetector:
         Initialize the detector with a YOLO model.
         
         Args:
-            model_path: Path to custom YOLO model. If None, uses pretrained YOLOv8.
+            model_path: Path to custom YOLO model. If None, auto-detects trained model or uses pretrained.
             
         Note:
             The pretrained YOLOv8 model detects general objects (people, cars, etc.),
@@ -74,11 +74,31 @@ class DocumentDetector:
         """
         if model_path and Path(model_path).exists():
             self.model = YOLO(model_path)
+            print(f"✓ Loaded custom model: {model_path}")
         else:
-            # Use pretrained YOLOv8 model (will download on first use)
-            # WARNING: This model detects general objects, not signatures/stamps/QR codes!
-            # For actual document detection, you need a custom trained model.
-            self.model = YOLO('yolov8n.pt')  # nano version for speed
+            # Try to find trained model automatically
+            trained_model_paths = [
+                'runs/train/digital_inspector_v1/weights/best.pt',
+                'runs/train/digital_inspector/weights/best.pt',
+                'models/digital_inspector.pt',
+                'models/best.pt'
+            ]
+            
+            trained_model = None
+            for path in trained_model_paths:
+                if Path(path).exists():
+                    trained_model = path
+                    break
+            
+            if trained_model:
+                self.model = YOLO(trained_model)
+                print(f"✓ Loaded trained model: {trained_model}")
+            else:
+                # Use pretrained YOLOv8 model (will download on first use)
+                # WARNING: This model detects general objects, not signatures/stamps/QR codes!
+                # For actual document detection, you need a custom trained model.
+                self.model = YOLO('yolov8n.pt')  # nano version for speed
+                print(f"⚠️  Using pretrained YOLOv8 (not trained for documents)")
         
         # Class names for our use case
         # Note: Using pretrained model, we'll filter for relevant detections

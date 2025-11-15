@@ -1,0 +1,14 @@
+# Digital Inspector Dataset
+path: /Users/danazhaksylyk/armeta/backend/data/yolo_dataset
+train: images/train
+val: images/val
+test: images/test
+
+# Classes
+names:
+  0: signature
+  1: stamp
+  2: qr
+
+# Dataset info
+nc: 3  # number of classes
