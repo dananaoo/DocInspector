@@ -35,16 +35,34 @@ venv
 *~
 
 # Project specific
-*.jpg
-*.jpeg
-*.png
-*.pdf
 output_*.jpg
 output_*.json
-test_images/
+test_output_*.jpg
+test_output_*.json
+
+# YOLO training outputs
+runs/
+data/yolo_dataset/
+*.cache
+
+# Model files (keep original PDFs and annotations)
 *.pt
+!yolov8*.pt
 *.pth
 *.onnx
+
+# Keep test data
+!test_images/
+!data/pdfs/
+!data/annotations/
+
+# Database
+*.db
+*.db-journal
+
+# Uploads
+uploads/
+output/
 
 # OS
 .DS_Store
