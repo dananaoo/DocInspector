@@ -42,12 +42,19 @@ test_output_*.json
 
 # YOLO training outputs
 runs/
+# BUT allow the trained model to be committed
+!runs/train/digital_inspector_v1/
+!runs/train/digital_inspector_v1/weights/
+!runs/train/digital_inspector_v1/weights/best.pt
+
 data/yolo_dataset/
 *.cache
 
 # Model files (keep original PDFs and annotations)
 *.pt
 !yolov8*.pt
+# Allow our custom trained model
+!runs/train/digital_inspector_v1/weights/best.pt
 *.pth
 *.onnx
 
