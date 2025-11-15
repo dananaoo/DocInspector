@@ -325,8 +325,9 @@ async def get_page_image(
     db: Session = Depends(get_db)
 ):
     """
-    Get annotated image for a page.
-    Generates on-demand from PDF + detection JSON (not stored permanently!)
+    Get raw image for a page (without annotations).
+    Generates on-demand from PDF (not stored permanently!)
+    Frontend draws its own bounding boxes.
     """
     from database import get_page
     import tempfile
@@ -341,14 +342,11 @@ async def get_page_image(
         raise HTTPException(status_code=404, detail="PDF file not found")
     
     try:
-        # Get detections from database
-        detections_data = get_page_detections(db, page_id)
-        
         # Convert PDF page to image
         pdf_doc = fitz.open(doc.file_path)
         pdf_page = pdf_doc[page.page_number - 1]  # 0-indexed
         
-        # Get page dimensions from JSON
+        # Get page dimensions
         page_rect = pdf_page.rect
         target_width = int(page_rect.width * 2)  # 2x for better quality
         target_height = int(page_rect.height * 2)
@@ -363,42 +361,15 @@ async def get_page_image(
         pix.save(temp_file.name)
         pdf_doc.close()
         
-        # Load with OpenCV
+        # Convert PNG to JPG for smaller file size
         image = cv2.imread(temp_file.name)
-        
-        # Draw detections from database
-        for det in detections_data:
-            # Scale coordinates if needed
-            x1 = int(det.bbox_x1 * zoom_x)
-            y1 = int(det.bbox_y1 * zoom_y)
-            x2 = int(det.bbox_x2 * zoom_x)
-            y2 = int(det.bbox_y2 * zoom_y)
-            
-            # Get color based on class
-            colors = {
-                'signature': (0, 255, 0),    # Green
-                'stamp': (255, 0, 0),        # Blue
-                'qr': (0, 0, 255),           # Red
-            }
-            color = colors.get(det.class_name, (0, 255, 255))
-            
-            # Draw bounding box
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
-            
-            # Add label
-            label = f"{det.class_name} {det.confidence:.2f}"
-            label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            cv2.rectangle(image, (x1, y1 - label_size[1] - 10), (x1 + label_size[0], y1), color, -1)
-            cv2.putText(image, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        
-        # Save final image to temporary file
         output_file = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
         cv2.imwrite(output_file.name, image)
         
         # Clean up intermediate temp file
         Path(temp_file.name).unlink()
         
-        # Return the generated image
+        # Return the raw image (no annotations - frontend draws its own boxes)
         return FileResponse(
             output_file.name,
             media_type="image/jpeg",

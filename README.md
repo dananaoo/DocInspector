@@ -20,33 +20,36 @@
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### Option 1: Full Stack (Backend + Frontend)
+
+```bash
+# Terminal 1: Start Backend
+cd backend
+pip install -r requirements.txt
+python api_v2.py
+
+# Terminal 2: Start Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+Open browser: `http://localhost:3000`
+
+### Option 2: Backend Only (API Testing)
 
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-### 2. Start API Server
-
-```bash
-# Use API v2 (storage optimized)
 python api_v2.py
 ```
 
-API: `http://localhost:8000`
-Docs: `http://localhost:8000/docs`
+API: `http://localhost:8000/docs`
 
-### 3. Test API
-
+Test upload:
 ```bash
-# Upload PDF
 curl -X POST "http://localhost:8000/api/documents/upload" \
   -F "file=@backend/data/pdfs/АПЗ-.pdf"
-
-# Or run automated test
-cd backend
-./test_api.sh
 ```
 
 ## 📁 Project Structure
@@ -54,20 +57,31 @@ cd backend
 ```
 armeta/
 ├── backend/
-│   ├── main.py                 # FastAPI server
-│   ├── detect.py               # Detection logic
+│   ├── api_v2.py               # FastAPI server ⭐
+│   ├── detect.py               # YOLO detection logic
+│   ├── database.py             # Database models
 │   ├── prepare_dataset.py      # Dataset preparation
 │   ├── train_model.py          # Model training
+│   ├── requirements.txt        # Python dependencies
 │   ├── data/
 │   │   ├── pdfs/               # Original documents
 │   │   ├── annotations/        # Ground truth labels
 │   │   └── yolo_dataset/       # Prepared YOLO dataset
-│   ├── runs/train/             # Training outputs
-│   │   └── digital_inspector_v1/
-│   │       └── weights/
-│   │           └── best.pt     # 🏆 Trained model
-│   └── models/                 # Model storage
-├── TRAINING_SUMMARY.md         # Training overview
+│   └── runs/train/             # Training outputs
+│       └── digital_inspector_v1/
+│           └── weights/
+│               └── best.pt     # 🏆 Trained model (76% mAP50)
+├── frontend/                   # React UI ⭐
+│   ├── src/
+│   │   ├── api/client.ts       # Backend API client
+│   │   ├── components/         # UI components
+│   │   ├── App.tsx             # Main app
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── vite.config.ts          # Vite config with proxy
+│   └── README.md
+├── TRAINING_SUMMARY.md         # Training results
+├── FRONTEND_INTEGRATION.md     # Integration guide ⭐
 └── README.md                   # This file
 ```
 
@@ -75,11 +89,13 @@ armeta/
 
 | Document | Description |
 |----------|-------------|
-| [backend/README.md](backend/README.md) | API documentation & usage |
-| [backend/TRAINING_GUIDE.md](backend/TRAINING_GUIDE.md) | Complete training guide |
-| [TRAINING_SUMMARY.md](TRAINING_SUMMARY.md) | Current training status |
-| [backend/NEXT_STEPS.md](backend/NEXT_STEPS.md) | Understanding 0 detections |
-| [backend/TESTING_GUIDE.md](backend/TESTING_GUIDE.md) | Testing instructions |
+| [backend/README.md](backend/README.md) | Backend setup and API guide |
+| [frontend/README.md](frontend/README.md) | Frontend setup guide ⭐ |
+| [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md) | How frontend connects to backend ⭐ |
+| [backend/API_DOCUMENTATION.md](backend/API_DOCUMENTATION.md) | Complete API reference |
+| [backend/TRAINING_GUIDE.md](backend/TRAINING_GUIDE.md) | How to train YOLO models |
+| [TRAINING_SUMMARY.md](TRAINING_SUMMARY.md) | Model performance results |
+| [backend/STORAGE_OPTIMIZATION.md](backend/STORAGE_OPTIMIZATION.md) | Storage design details |
 
 ## 🎓 Training Your Own Model
 
