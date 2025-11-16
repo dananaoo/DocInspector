@@ -108,29 +108,38 @@ export function DocumentsList({ documents, onOpenDocument, onDeleteDocument }: D
                     {doc.status}
                   </Badge>
 
-                  {/* Detection Icons - Show only for Processed documents */}
-                  {doc.status === 'Processed' && (doc.qrCodes || doc.signatures || doc.stamps) && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F7F8FA] rounded-lg border border-[#E6E6E6]">
-                      {doc.qrCodes && doc.qrCodes > 0 && (
-                        <div className="flex items-center gap-1">
-                          <QrCode className="w-3.5 h-3.5 text-[#9C27B0]" />
-                          <span className="text-[#9C27B0]">{doc.qrCodes}</span>
-                        </div>
-                      )}
-                      {doc.signatures && doc.signatures > 0 && (
-                        <div className="flex items-center gap-1">
-                          <PenLine className="w-3.5 h-3.5 text-[#4A6CF7]" />
-                          <span className="text-[#4A6CF7]">{doc.signatures}</span>
-                        </div>
-                      )}
-                      {doc.stamps && doc.stamps > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Stamp className="w-3.5 h-3.5 text-[#F44336]" />
-                          <span className="text-[#F44336]">{doc.stamps}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* Detection Icons - Show only for Processed documents with non-zero counts */}
+                  {doc.status === 'Processed' && (() => {
+                    const hasQrCodes = (doc.qrCodes ?? 0) > 0;
+                    const hasSignatures = (doc.signatures ?? 0) > 0;
+                    const hasStamps = (doc.stamps ?? 0) > 0;
+                    const hasAnyDetections = hasQrCodes || hasSignatures || hasStamps;
+                    
+                    if (!hasAnyDetections) return null;
+                    
+                    return (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F7F8FA] rounded-lg border border-[#E6E6E6]">
+                        {hasQrCodes && (
+                          <div className="flex items-center gap-1">
+                            <QrCode className="w-3.5 h-3.5 text-[#9C27B0]" />
+                            <span className="text-[#9C27B0]">{doc.qrCodes}</span>
+                          </div>
+                        )}
+                        {hasSignatures && (
+                          <div className="flex items-center gap-1">
+                            <PenLine className="w-3.5 h-3.5 text-[#4A6CF7]" />
+                            <span className="text-[#4A6CF7]">{doc.signatures}</span>
+                          </div>
+                        )}
+                        {hasStamps && (
+                          <div className="flex items-center gap-1">
+                            <Stamp className="w-3.5 h-3.5 text-[#F44336]" />
+                            <span className="text-[#F44336]">{doc.stamps}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <Button
                     onClick={() => onOpenDocument(doc.id)}

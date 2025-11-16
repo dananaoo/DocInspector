@@ -70,7 +70,7 @@ export default function App() {
 
   const handleUpload = async (file: File) => {
     try {
-      // Upload the file
+      // Upload the file (this is async and can run in parallel with other uploads)
       const result = await api.uploadDocument(file);
       
       // Create a temporary document with 'In Queue' status
@@ -83,28 +83,38 @@ export default function App() {
         detections: 0
       };
       
-      setDocuments([tempDoc, ...documents]);
-      setSelectedDocumentId(result.document_id);
-      setCurrentPage('view');
+      // Add to documents list immediately (optimistic update)
+      const isFirstDocument = documents.length === 0;
+      setDocuments(prev => [tempDoc, ...prev]);
       
-      toast.success('Document uploaded successfully!');
+      // Open the first uploaded document immediately (don't wait for others)
+      // Always open if we're on home page, or if this is the first document
+      if (currentPage === 'home' || isFirstDocument) {
+        setSelectedDocumentId(result.document_id);
+        setCurrentPage('view');
+      }
       
-      // Poll for completion
+      toast.success(`${result.filename} uploaded successfully!`);
+      
+      // Poll for completion in background (non-blocking)
       api.pollDocumentStatus(result.document_id, (doc) => {
         const converted = convertDocument(doc);
         setDocuments(prev => prev.map(d => d.id === converted.id ? converted : d));
       }).then((doc) => {
         const converted = convertDocument(doc);
         setDocuments(prev => prev.map(d => d.id === converted.id ? converted : d));
-        toast.success('Document processing completed!');
+        // Only show toast if document is not currently being viewed
+        if (selectedDocumentId !== doc.id) {
+          toast.success(`${doc.filename} processing completed!`);
+        }
       }).catch((error) => {
-        console.error('Processing failed:', error);
-        toast.error('Document processing failed');
+        console.error('Polling error:', error);
+        // Don't show error toast for polling - it's background
       });
       
     } catch (error) {
-      console.error('Upload failed:', error);
-      toast.error('Failed to upload document');
+      console.error('Upload error:', error);
+      toast.error(`Failed to upload ${file.name}`);
     }
   };
 

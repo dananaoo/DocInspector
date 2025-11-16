@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, Download, ArrowLeft, QrCode, PenLine, Stamp } from 'lucide-react';
+import { ZoomIn, ZoomOut, Download, ArrowLeft, QrCode, PenLine, Stamp, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -205,6 +205,35 @@ export function DocumentView({ document, onBack }: DocumentViewProps) {
       }
     }
   }, [selectedDetection, selectedPage, pages]);
+
+  // Show processing state if document is still in queue
+  if (document.status === 'In Queue') {
+    return (
+      <div className="max-w-[1800px] mx-auto px-6 py-8">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="mb-4 text-[#6B7280] hover:text-[#1A1A1A] -ml-2"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Documents
+        </Button>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center max-w-md">
+            <div className="w-16 h-16 border-4 border-[#4A6CF7] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+            <h3 className="text-[#1A1A1A] text-xl font-semibold mb-2">Processing Document</h3>
+            <p className="text-[#6B7280] mb-4">
+              {document.name} is being processed. This may take a few moments...
+            </p>
+            <div className="flex items-center justify-center gap-2 text-[#9CA3AF] text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Detecting signatures, stamps, and QR codes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading state
   if (loading || pages.length === 0) {

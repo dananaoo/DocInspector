@@ -25,19 +25,32 @@ export function HomePage({ onUpload }: HomePageProps) {
     setIsDragging(false);
     
     const files = Array.from(e.dataTransfer.files);
-    const validFile = files.find(file => 
+    const validFiles = files.filter(file => 
       file.type === 'application/pdf'
     );
     
-    if (validFile) {
-      onUpload(validFile);
+    if (validFiles.length > 0) {
+      // Upload up to 10 files
+      const filesToUpload = validFiles.slice(0, 10);
+      filesToUpload.forEach(file => onUpload(file));
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onUpload(file);
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => 
+      file.type === 'application/pdf'
+    );
+    
+    if (validFiles.length > 0) {
+      // Upload up to 10 files
+      const filesToUpload = validFiles.slice(0, 10);
+      filesToUpload.forEach(file => onUpload(file));
+    }
+    
+    // Reset input to allow selecting the same files again
+    if (e.target) {
+      e.target.value = '';
     }
   };
 
@@ -84,7 +97,7 @@ export function HomePage({ onUpload }: HomePageProps) {
             {/* Text */}
             <div>
               <p className="text-[#1A1A1A] mb-2">
-                Drag and drop your file here
+                Drag and drop your files here (up to 10 PDFs)
               </p>
               <p className="text-[#9CA3AF]">
                 or
@@ -105,6 +118,7 @@ export function HomePage({ onUpload }: HomePageProps) {
               type="file"
               accept=".pdf,application/pdf"
               onChange={handleFileSelect}
+              multiple
               className="hidden"
             />
           </div>
