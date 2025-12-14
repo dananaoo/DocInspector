@@ -1,4 +1,5 @@
 # Digital Inspector
+Demo: https://youtu.be/gFEfWWid7yI
 
 🤖 AI-powered detection of **signatures**, **stamps/seals**, and **QR codes** on construction documents using custom-trained YOLOv8.
 
